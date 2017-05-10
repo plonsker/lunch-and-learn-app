@@ -5,28 +5,61 @@ import './App.css';
 
 class App extends Component {
 
+  constructor(props){
+    super(props);
+    this.state = {
+      inventory: {}
+    }
+  }
+
   componentWillMount() {
     fetch('http://localhost:4000/db')
       .then(response => {
         return response.json();
       })
       .then(responsJson => {
-        debugger;
         console.log(responsJson);
+        this.setState({
+          inventory: responsJson.inventory
+        })
       });
   }
+
+  renderInventoryWhenReady(){
+    if (this.state.inventory.kind_bars){
+      return (
+        <div className="inventory-container">
+        <h3 className>
+          {this.state.inventory.kind_bars.name}
+        </h3>
+
+        <p className="item-description">
+        {this.state.inventory.kind_bars.description}
+        </p>
+
+        <p className="item-description">
+        {this.state.inventory.kind_bars.votes}
+        </p>
+      </div>
+    );
+  } else {
+    return (
+      <p className="loading-indicator"> Loading </p>
+    );
+  }
+}
 
   render() {
     return (
       <div className="App">
         <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Inventory</h2>
+
+
+        <h2> Inventory</h2>
         </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        {this.renderInventoryWhenReady()}
       </div>
+
     );
   }
 }
