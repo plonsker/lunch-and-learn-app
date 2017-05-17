@@ -5,11 +5,11 @@ import './App.css';
 
 class App extends Component {
 
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       inventory: {}
-    }
+    };
   }
 
   componentWillMount() {
@@ -17,49 +17,48 @@ class App extends Component {
       .then(response => {
         return response.json();
       })
-      .then(responsJson => {
-        console.log(responsJson);
+      .then(responseJson => {
+        console.log(responseJson);
         this.setState({
-          inventory: responsJson.inventory
-        })
+          inventory: responseJson.inventory
+        });
+      })
+      .catch(err => {
+        console.error(err);
       });
   }
 
-  renderInventoryWhenReady(){
-    if (this.state.inventory.kind_bars){
+  renderInventoryWhenReady() {
+    if (this.state.inventory.kind_bars) {
       return (
-        <div className="inventory-container">
-        <h3 className>
-          {this.state.inventory.kind_bars.name}
-        </h3>
-
-        <p className="item-description">
-        {this.state.inventory.kind_bars.description}
-        </p>
-
-        <p className="item-description">
-        {this.state.inventory.kind_bars.votes}
-        </p>
-      </div>
-    );
-  } else {
-    return (
-      <p className="loading-indicator"> Loading </p>
-    );
+          <div className="inventory-container" >
+            <h3 className="item-name">
+              {this.state.inventory.kind_bars.name}
+            </h3>
+            <p className="item-description">
+              {this.state.inventory.kind_bars.description}
+            </p>
+            <p className="item-votes">
+              {this.state.inventory.kind_bars.votes}
+            </p>
+          </div>
+      );
+    } else {
+      return (
+        <p className="loading-indicator"> Loading ... </p>
+      );
+    }
   }
-}
 
   render() {
     return (
       <div className="App">
         <div className="App-header">
-
-
-        <h2> Inventory</h2>
+          <img src={logo} className="App-logo" alt="logo" />
+          <h2>Inventory</h2>
         </div>
         {this.renderInventoryWhenReady()}
       </div>
-
     );
   }
 }
