@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import fetch from 'isomorphic-fetch';
 import logo from './logo.svg';
 import InventoryList from './InventoryList/InventoryList'
+import ItemDetail from './ItemDetail/ItemDetail'
 import './App.css';
 
 class App extends Component {
@@ -53,10 +54,14 @@ class App extends Component {
           <h2>Inventory</h2>
         </div>
         {this.renderInventoryWhenReady()}
+        <ItemDetail
+        name="This is a test."
+        description="The most delicious snack."
+        votes={0}/>
       </div>
     );
   }
 }
 
 export default App;
-//line from when i pushed again 
+//line from when i pushed again
