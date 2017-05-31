@@ -14,7 +14,7 @@ renderItems() {
     return (
         <div
         key={key}
-        className="inventory-container" >
+        className="inventoryContainer" >
           <h3 className="item-name">
             {item.name}
           </h3>
