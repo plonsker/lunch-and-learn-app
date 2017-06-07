@@ -12,8 +12,14 @@ class App extends Component {
     this.state = {
       fetching: true,
       inventory: {},
-      selectedItem: '',
+      selectedItem: ''
     };
+  }
+
+  setSelectedItem(itemId){
+    this.setState({
+      selectedItem: itemId
+    })
   }
 
   componentWillMount() {
@@ -40,7 +46,7 @@ class App extends Component {
       );
     }
     return (
-      <InventoryList items={this.state.inventory} />
+      <InventoryList onClickItem={this.setSelectedItem} items={this.state.inventory} />
     );
   }
 
