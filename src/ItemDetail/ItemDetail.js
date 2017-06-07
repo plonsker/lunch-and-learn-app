@@ -3,26 +3,32 @@ import './ItemDetail.css';
 
 class ItemDetail extends Component {
 
-static propTypes = {
-  name: PropTypes.object.isRequired,
-  description: PropTypes.object.isRequired,
-  votes: PropTypes.object.isRequired,
-  flavors: PropTypes.object.isRequired,
-}
+  static propTypes = {
+    name: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    votes: PropTypes.number.isRequired,
+    flavors: PropTypes.object,
+  }
 
 
-render(){
-  return (
-  <div className="ItemDetail-container">
-  <p className="ItemDetail-container">
-  {this.props.name}
-  </p>
-  <p className="ItemDetail-container">
-  {this.props.description}</p>
-  <p className="ItemDetail-container">{this.props.votes}</p>
-  <p className="ItemDetail-container">{this.props.flavors}</p>
-  </div>
-  );
+  render() {
+    return (
+      <div className="ItemDetail-container">
+        <p className="ItemDetail-name">
+          {this.props.name}
+        </p>
+        <p className="ItemDetail-description">
+          {this.props.description}
+        </p>
+        <p className="ItemDetail-votes">
+          {this.props.votes}
+        </p>
+        <p className="ItemDetail-flavors">
+          None
+        </p>
+      </div>
+    );
   }
 }
+
 export default ItemDetail;

@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import fetch from 'isomorphic-fetch';
 import logo from './logo.svg';
-import InventoryList from './InventoryList/InventoryList'
-import ItemDetail from './ItemDetail/ItemDetail'
+import InventoryList from './InventoryList/InventoryList';
+import ItemDetail from './ItemDetail/ItemDetail';
 import './App.css';
 
 class App extends Component {
@@ -11,20 +11,21 @@ class App extends Component {
     super(props);
     this.state = {
       fetching: true,
-      inventory: {}
+      inventory: {},
+      selectedItem: '',
     };
   }
 
   componentWillMount() {
-    fetch('http://localhost:4000/db')
+    fetch('http://localhost:3000/db')
       .then(response => {
         return response.json();
       })
       .then(responseJson => {
         console.log(responseJson);
         this.setState({
+          fetching: false,
           inventory: responseJson.inventory,
-          fetching: false
         });
       })
       .catch(err => {
@@ -33,38 +34,34 @@ class App extends Component {
   }
 
   renderInventoryWhenReady() {
-    if (this.state.fetching){
+    if (this.state.fetching) {
       return (
-      <p>Loading...</p>
+        <p className="loading-indicator"> Loading ... </p>
+      );
+    }
+    return (
+      <InventoryList items={this.state.inventory} />
     );
-  }
-
-  return (
-    <InventoryList items={this.state.inventory}/>
-  )
-
-
   }
 
   render() {
     return (
-      <div>
       <div className="App">
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h2>Inventory</h2>
         </div>
-        {this.renderInventoryWhenReady()}
-        <ItemDetail
-        name="This is a test."
-        description="The most delicious snack."
-        votes={0}/>
-      </div>
+        <div className="App-content-container">
+          {this.renderInventoryWhenReady()}
+          <ItemDetail
+            name="This is a test."
+            description="The Most delicious snack."
+            votes={0}
+          />
+        </div>
       </div>
     );
   }
 }
 
-
 export default App;
-//remember to export App itself
