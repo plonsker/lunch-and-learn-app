@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+
 import fetch from 'isomorphic-fetch';
 import logo from './logo.svg';
 import InventoryList from './InventoryList/InventoryList';
@@ -8,18 +9,32 @@ import './App.css';
 class App extends Component {
 
   constructor(props) {
+    debugger;
     super(props);
+    let selectedItem = props.match.params.itemId;
     this.state = {
       fetching: true,
       inventory: {},
-      selectedItem: ''
+      selectedItem: selectedItem,
     };
   }
 
-  setSelectedItem(itemId){
+  setSelectedItem = (itemId) => {
     this.setState({
       selectedItem: itemId
-    })
+    });
+  }
+
+  handleUpvote = () => {
+    let itemToUpvote = this.state.inventory[this.state.selectedItem];
+    itemToUpvote.votes += 1;
+    let newInventory = {
+      ...this.state.inventory,
+      [this.state.selectedItem]: itemToUpvote,
+    };
+    this.setState({
+      inventory: newInventory
+    });
   }
 
   componentWillMount() {
@@ -39,6 +54,14 @@ class App extends Component {
       });
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.match.params.itemId !== nextProps.match.params.itemId) {
+      this.setState({
+        selectedItem: nextProps.match.params.itemId
+      });
+    }
+  }
+
   renderInventoryWhenReady() {
     if (this.state.fetching) {
       return (
@@ -46,8 +69,32 @@ class App extends Component {
       );
     }
     return (
-      <InventoryList onClickItem={this.setSelectedItem} items={this.state.inventory} />
+      <InventoryList
+        onClickItem={this.setSelectedItem}
+        items={this.state.inventory}
+        selectedItem={this.state.selectedItem}
+      />
     );
+  }
+
+  renderItemDetailWhenSelected() {
+    console.log("Trying to render item")
+    if (this.state.selectedItem && this.state.inventory[this.state.selectedItem]) {
+      console.log("Rendering item now.")
+      const selectedItem = this.state.inventory[this.state.selectedItem]
+      return (
+        <ItemDetail
+          name={selectedItem.name}
+          description={selectedItem.description}
+          votes={selectedItem.votes}
+          onClickUpvote={this.handleUpvote}
+        />
+      );
+    } else {
+      return (
+        <div className="empty-item-detail"/>
+      )
+    }
   }
 
   render() {
@@ -59,11 +106,7 @@ class App extends Component {
         </div>
         <div className="App-content-container">
           {this.renderInventoryWhenReady()}
-          <ItemDetail
-            name="This is a test."
-            description="The Most delicious snack."
-            votes={0}
-          />
+          {this.renderItemDetailWhenSelected()}
         </div>
       </div>
     );
