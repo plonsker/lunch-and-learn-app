@@ -1,5 +1,6 @@
 .InventoryList-container {
   flex: 0.5;
+  overflow:scroll;
 }
 
 .inventory-container {
