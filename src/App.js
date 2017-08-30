@@ -1,28 +1,86 @@
 import React, { Component, PropTypes } from 'react';
+import { Link } from 'react-router-dom';
 
 import fetch from 'isomorphic-fetch';
 import logo from './logo.svg';
 import InventoryList from './InventoryList/InventoryList';
 import ItemDetail from './ItemDetail/ItemDetail';
+import NewItemForm from './NewItemForm/NewItemForm';
+
 import './App.css';
 
 class App extends Component {
 
   constructor(props) {
-    debugger;
     super(props);
-    let selectedItem = props.match.params.itemId;
+    let selectedItem = ''
+    let addingItem = false;
+    if (props.match.params.itemId === 'add_item') {
+      addingItem = true;
+    } else {
+      selectedItem = props.match.params.itemId;
+    }
     this.state = {
       fetching: true,
       inventory: {},
       selectedItem: selectedItem,
+      addingItem: addingItem,
     };
   }
 
-  setSelectedItem = (itemId) => {
-    this.setState({
-      selectedItem: itemId
-    });
+  updateInventory(newInventory) {
+    return fetch('http://localhost:3000/inventory',{
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(newInventory),
+    })
+    .then(response => {
+      return response.json();
+    })
+  }
+
+  removeItem = (itemId) => {
+    let newInventory = this.state.inventory;
+    // Remove the item
+    delete newInventory[itemId];
+    this.updateInventory(newInventory)
+      .then(responseJson => {
+        console.log(responseJson);
+        if (!Object.keys(responseJson).length) {
+          console.log('Failed to remove item: ' + itemId);
+          return;
+        }
+        this.setState({
+          inventory: responseJson,
+        });
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }
+
+  submitNewItem = (newItem) => {
+    let newInventory = {
+      ...this.state.inventory,
+      [newItem.id]: newItem,
+    }
+    this.updateInventory(newInventory)
+      .then(responseJson => {
+        console.log(responseJson);
+        if (!Object.keys(responseJson).length) {
+          console.log('Failed to create new item');
+          return;
+        }
+        this.setState({
+          inventory: responseJson,
+          addingItem: false,
+        });
+      })
+      .catch(err => {
+        console.error(err);
+      });
   }
 
   handleUpvote = () => {
@@ -32,9 +90,23 @@ class App extends Component {
       ...this.state.inventory,
       [this.state.selectedItem]: itemToUpvote,
     };
-    this.setState({
-      inventory: newInventory
-    });
+    this.updateInventory(newInventory)
+      .then(responseJson => {
+        console.log(responseJson);
+        if (!Object.keys(responseJson).length) {
+          console.log('Failed to upvote');
+          return;
+        }
+        this.setState({
+          inventory: responseJson
+        });
+      })
+      .catch(err => {
+        console.error(err);
+      });
+    // this.setState({
+    //   inventory: newInventory
+    // });
   }
 
   componentWillMount() {
@@ -56,9 +128,16 @@ class App extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.match.params.itemId !== nextProps.match.params.itemId) {
-      this.setState({
-        selectedItem: nextProps.match.params.itemId
-      });
+      if (nextProps.match.params.itemId === 'add_item') {
+        this.setState({
+          addingItem: true,
+        });
+      } else {
+        this.setState({
+          selectedItem: nextProps.match.params.itemId,
+          addingItem: false,
+        });
+      }
     }
   }
 
@@ -70,11 +149,21 @@ class App extends Component {
     }
     return (
       <InventoryList
-        onClickItem={this.setSelectedItem}
         items={this.state.inventory}
         selectedItem={this.state.selectedItem}
+        onClickRemove={this.removeItem}
       />
     );
+  }
+
+  renderContentArea() {
+    if (this.state.addingItem) {
+      return (
+        <NewItemForm onSubmitNewItem={this.submitNewItem}/>
+      );
+    } else {
+      return this.renderItemDetailWhenSelected();
+    }
   }
 
   renderItemDetailWhenSelected() {
@@ -97,16 +186,23 @@ class App extends Component {
     }
   }
 
+  renderAddItemButton() {
+    return (
+      <Link
+        to="/add_item"
+        className="add-item-button">
+        Add Item
+      </Link>
+    );
+  }
+
   render() {
     return (
       <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Inventory</h2>
-        </div>
         <div className="App-content-container">
           {this.renderInventoryWhenReady()}
-          {this.renderItemDetailWhenSelected()}
+          {this.renderContentArea()}
+          {this.renderAddItemButton()}
         </div>
       </div>
     );

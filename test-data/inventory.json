@@ -4,7 +4,7 @@
       "id": 1,
       "name": "Kind Bars",
       "description": "A healthy candy bar alternative.",
-      "votes": 1,
+      "votes": 12,
       "flavors": {
         "seaSaltCaramel": {
           "name": "Sea Salt Caramel",
@@ -17,7 +17,7 @@
       "id": 2,
       "name": "Mean Bars",
       "description": "A shitty candy bar alternative and personality.",
-      "votes": 0,
+      "votes": 4,
       "flavors": {
         "seaSaltCaramel": {
           "name": "Sea Salt Caramel",
@@ -30,12 +30,67 @@
       "id": 3,
       "name": "Natural Valley crunchy sugar shit",
       "description": "Sugar with some oats",
-      "votes": 0,
+      "votes": 5,
       "flavors": {
         "seaSaltCaramel": {
           "name": "Sugarloaf",
           "favorites": 0,
           "description": "The sugar flavor."
+        }
+      }
+    },
+    "pizza_pringles": {
+      "id": "pizza_pringles",
+      "name": "Pizza Pringles",
+      "description": "Once you pop the fun don't stop!",
+      "votes": 4,
+      "flavors": {}
+    },
+    "young_thug_oreos": {
+      "id": "young_thug_oreos",
+      "name": "Young Thug Oreos",
+      "description": "The most thug oreos.",
+      "votes": 0,
+      "flavors": {}
+    },
+    "la_croix": {
+      "id": "la_croix",
+      "name": "La Croix",
+      "description": "Sparkling Water but fancy.",
+      "votes": 0,
+      "flavors": {
+        "pizza_sauce": {
+          "name": "Pizza Sauce",
+          "description": "fuckin gross TBH",
+          "favorites": 0
+        },
+        "ham": {
+          "name": "Ham",
+          "description": "Pairs well with garbage.",
+          "favorites": 0
+        },
+        "scallop": {
+          "name": "Scallop",
+          "description": "gross",
+          "favorites": 0
+        }
+      }
+    },
+    "pop_chips": {
+      "id": "pop_chips",
+      "name": "Pop Chips",
+      "description": "Not fried but popped",
+      "votes": 0,
+      "flavors": {
+        "sour_cream_&_onion": {
+          "name": "Sour Cream & Onion",
+          "description": "Delicious",
+          "favorites": 0
+        },
+        "plain": {
+          "name": "Plain",
+          "description": "boring",
+          "favorites": 0
         }
       }
     }
