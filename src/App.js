@@ -41,6 +41,26 @@ class App extends Component {
     })
   }
 
+  removeItem = (itemId) => {
+    let newInventory = this.state.inventory;
+    // Remove the item
+    delete newInventory[itemId];
+    this.updateInventory(newInventory)
+      .then(responseJson => {
+        console.log(responseJson);
+        if (!Object.keys(responseJson).length) {
+          console.log('Failed to remove item: ' + itemId);
+          return;
+        }
+        this.setState({
+          inventory: responseJson,
+        });
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }
+
   submitNewItem = (newItem) => {
     let newInventory = {
       ...this.state.inventory,
@@ -54,7 +74,8 @@ class App extends Component {
           return;
         }
         this.setState({
-          inventory: responseJson
+          inventory: responseJson,
+          addingItem: false,
         });
       })
       .catch(err => {
@@ -130,6 +151,7 @@ class App extends Component {
       <InventoryList
         items={this.state.inventory}
         selectedItem={this.state.selectedItem}
+        onClickRemove={this.removeItem}
       />
     );
   }
@@ -177,10 +199,6 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Inventory</h2>
-        </div>
         <div className="App-content-container">
           {this.renderInventoryWhenReady()}
           {this.renderContentArea()}
