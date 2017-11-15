@@ -1,13 +1,17 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router-dom';
 
-import fetch from 'isomorphic-fetch';
+// import fetch from 'isomorphic-fetch';
 import logo from './logo.svg';
 import InventoryList from './InventoryList/InventoryList';
 import ItemDetail from './ItemDetail/ItemDetail';
 import NewItemForm from './NewItemForm/NewItemForm';
 
 import './App.css';
+
+function getItemId(item) {
+  return item.name.replace(/\s/g, '_').toLowerCase();
+}
 
 class App extends Component {
 
@@ -28,13 +32,13 @@ class App extends Component {
     };
   }
 
-  updateInventory(newInventory) {
-    return fetch('http://localhost:3000/inventory',{
+  updateItem(itemToUpdate) {
+    return fetch(`http://localhost:1337/item/${itemToUpdate.id}`,{
       headers: {
         'Content-Type': 'application/json'
       },
-      method: 'POST',
-      body: JSON.stringify(newInventory),
+      method: 'PUT',
+      body: JSON.stringify(itemToUpdate),
     })
     .then(response => {
       return response.json();
@@ -42,18 +46,19 @@ class App extends Component {
   }
 
   removeItem = (itemId) => {
-    let newInventory = this.state.inventory;
-    // Remove the item
-    delete newInventory[itemId];
-    this.updateInventory(newInventory)
+    const itemToRemove = this.state.inventory[itemId];
+    fetch(`http://localhost:1337/item/${itemToRemove.id}`,{
+      method: 'DELETE',
+    })
+      .then(response => {
+        return response.json();
+      })
       .then(responseJson => {
         console.log(responseJson);
-        if (!Object.keys(responseJson).length) {
-          console.log('Failed to remove item: ' + itemId);
-          return;
-        }
+        const newInventory = this.state.inventory;
+        delete newInventory[itemId];
         this.setState({
-          inventory: responseJson,
+          inventory: newInventory,
         });
       })
       .catch(err => {
@@ -62,20 +67,24 @@ class App extends Component {
   }
 
   submitNewItem = (newItem) => {
-    let newInventory = {
-      ...this.state.inventory,
-      [newItem.id]: newItem,
-    }
-    this.updateInventory(newInventory)
+    fetch(`http://localhost:1337/item`,{
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(newItem),
+    })
+      .then(response => {
+        return response.json();
+      })
       .then(responseJson => {
         console.log(responseJson);
-        if (!Object.keys(responseJson).length) {
-          console.log('Failed to create new item');
-          return;
-        }
+        const item = responseJson;
+        const newInventory = this.state.inventory;
+        const itemId = getItemId(item);
+        newInventory[itemId] = item;
         this.setState({
-          inventory: responseJson,
-          addingItem: false,
+          inventory: newInventory,
         });
       })
       .catch(err => {
@@ -84,21 +93,18 @@ class App extends Component {
   }
 
   handleUpvote = () => {
-    let itemToUpvote = this.state.inventory[this.state.selectedItem];
-    itemToUpvote.votes += 1;
-    let newInventory = {
-      ...this.state.inventory,
-      [this.state.selectedItem]: itemToUpvote,
-    };
-    this.updateInventory(newInventory)
+    let itemToUpdate = this.state.inventory[this.state.selectedItem];
+    itemToUpdate.votes += 1;
+    this.updateItem(itemToUpdate)
       .then(responseJson => {
         console.log(responseJson);
-        if (!Object.keys(responseJson).length) {
-          console.log('Failed to upvote');
-          return;
-        }
+        const newInventory = {
+          ...this.state.inventory,
+        };
+        const itemId = getItemId(responseJson);
+        newInventory[itemId] = responseJson;
         this.setState({
-          inventory: responseJson
+          inventory: newInventory
         });
       })
       .catch(err => {
@@ -110,16 +116,15 @@ class App extends Component {
   }
 
   componentWillMount() {
-    fetch('http://localhost:1337/item/getMap')
+    fetch('http://localhost:1337/item/sortedMap')
       .then(response => {
-        debugger;
         return response.json();
       })
       .then(responseJson => {
         console.log(responseJson);
         this.setState({
           fetching: false,
-          inventory: responseJson.inventory,
+          inventory: responseJson,
         });
       })
       .catch(err => {
